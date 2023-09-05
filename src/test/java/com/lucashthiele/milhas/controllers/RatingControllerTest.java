@@ -15,10 +15,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,6 +36,8 @@ public class RatingControllerTest {
     private JacksonTester<RatingDTO> ratingDTOJSON;
     @Autowired
     private JacksonTester<Rating> ratingJSON;
+    @Autowired
+    private JacksonTester<List<Rating>> ratingListJSON;
 
     @Test
     @DisplayName("it should return status 200 when valid data was sent")
@@ -49,14 +54,72 @@ public class RatingControllerTest {
                                 .getJson())
         ).andReturn().getResponse();
 
-        // Validate HTTP Status Code to be 200
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat200(response.getStatus());
 
         var expectedJSON = ratingJSON.write(
                 rating
         ).getJson();
 
-        // Validate JSON sent back by the api
         assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    @Test
+    @DisplayName("it should return status code 200 when getting a list of ratings")
+    void getRatings200() throws Exception {
+        var ratingDTO = new RatingDTO("User Name","Rating Text", "https://picture-ulr.com");
+        var rating = new Rating(ratingDTO);
+        var mockRatingList = new ArrayList<Rating>();
+        mockRatingList.add(rating);
+
+        when(ratingService.findAll()).thenReturn(mockRatingList);
+
+        var response = mvc.perform(get("/depoimentos")).andReturn().getResponse();
+
+        assertThat200(response.getStatus());
+
+        var expectedJSON = ratingListJSON.write(
+                mockRatingList
+        ).getJson();
+
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    @Test
+    @DisplayName("it should should return status code 200 when valid update data is sent")
+    void putRating200() throws Exception{
+        var ratingDTO = new RatingDTO("User Name","Rating Text", "https://picture-ulr.com");
+        var rating = new Rating(ratingDTO);
+
+        when(ratingService.updateRating(1L, ratingDTO)).thenReturn(rating);
+
+        var response = mvc.perform(
+                put("/depoimentos/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(ratingDTOJSON.write(new RatingDTO("User Name","Rating Text", "https://picture-ulr.com"))
+                                .getJson())
+        ).andReturn().getResponse();
+
+        assertThat200(response.getStatus());
+
+        var expectedJSON = ratingJSON.write(
+                rating
+        ).getJson();
+
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    @Test
+    @DisplayName("it should  status code 204 when a valid delete is sent")
+    void deleteRating200() throws Exception{
+        var response = mvc.perform(delete("/depoimentos/1")).andReturn().getResponse();
+
+        assertThat204(response.getStatus());
+    }
+
+    private void assertThat200(int statusCode){
+        assertThat(statusCode).isEqualTo(HttpStatus.OK.value());
+    }
+    private void assertThat204(int statusCode){
+        assertThat(statusCode).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
