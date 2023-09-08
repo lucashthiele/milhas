@@ -24,4 +24,14 @@ public class DestinationService {
         if (name != null) return destinationRepository.findByNameContains(name);
         else return destinationRepository.findAll();
     }
+
+    public Destination updateDestination(Long id, DestinationDTO data) {
+        var destination = destinationRepository.findDestinationById(id);
+        destination.setName(data.name());
+        destination.setValue(data.value());
+        destination.setPictureUrl(data.pictureUrl());
+
+        destinationRepository.save(destination);
+        return destination;
+    }
 }
