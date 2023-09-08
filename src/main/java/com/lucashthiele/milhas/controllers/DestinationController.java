@@ -23,9 +23,7 @@ public class DestinationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Destination>> findDestination(@RequestParam("nome") String name){
-        var destinations = destinationService.findDestinationByName(name);
-
-        return ResponseEntity.ok(destinations);
+    public ResponseEntity<List<Destination>> findDestination(@RequestParam(value = "nome", required = false) String name){
+        return ResponseEntity.ok(destinationService.findDestinations(name));
     }
 }

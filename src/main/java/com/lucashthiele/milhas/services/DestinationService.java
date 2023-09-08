@@ -20,7 +20,8 @@ public class DestinationService {
         return destination;
     }
 
-    public List<Destination> findDestinationByName(String name) {
-        return destinationRepository.findByNameContains(name);
+    public List<Destination> findDestinations(String name) {
+        if (name != null) return destinationRepository.findByNameContains(name);
+        else return destinationRepository.findAll();
     }
 }

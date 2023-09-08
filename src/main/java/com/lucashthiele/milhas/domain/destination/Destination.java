@@ -18,6 +18,7 @@ public class Destination {
     private Long id;
     private String name;
     private BigDecimal value;
+    @Column(name = "picture_url")
     private String pictureUrl;
 
     public Destination(DestinationDTO data){
