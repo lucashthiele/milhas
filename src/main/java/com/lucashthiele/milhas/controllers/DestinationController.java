@@ -34,4 +34,11 @@ public class DestinationController {
 
         return ResponseEntity.ok(destination);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        destinationService.deleteDestination(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -34,4 +34,8 @@ public class DestinationService {
         destinationRepository.save(destination);
         return destination;
     }
+
+    public void deleteDestination(Long id) {
+        destinationRepository.deleteById(id);
+    }
 }
