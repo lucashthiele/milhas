@@ -2,8 +2,6 @@ package com.lucashthiele.milhas.controllers;
 
 import com.lucashthiele.milhas.domain.destination.Destination;
 import com.lucashthiele.milhas.domain.destination.DestinationDTO;
-import com.lucashthiele.milhas.domain.rating.Rating;
-import com.lucashthiele.milhas.domain.rating.RatingDTO;
 import com.lucashthiele.milhas.services.DestinationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -112,7 +110,18 @@ class DestinationControllerTest {
         assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
     }
 
+    @Test
+    @DisplayName("it should return 204 status code when deleting a destination")
+    void deleteDestination200() throws Exception {
+        var response = mvc.perform(delete("/destinos/1")).andReturn().getResponse();
+
+        assertThat204(response.getStatus());
+    }
+
     private void assertThat200(int statusCode){
         assertThat(statusCode).isEqualTo(HttpStatus.OK.value());
+    }
+    private void assertThat204(int statusCode){
+        assertThat(statusCode).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
