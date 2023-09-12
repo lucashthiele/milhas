@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -47,6 +48,30 @@ class DestinationControllerTest {
 
         var response = mvc.perform(
                 post("/destinos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(destinationDTOJSON.write(new DestinationDTO("Destination Name", new BigDecimal(500), "http://localhost:8080/image"))
+                                .getJson())
+        ).andReturn().getResponse();
+
+        assertThat200(response.getStatus());
+
+        var expectedJSON = destinationJSON.write(
+                destination
+        ).getJson();
+
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    @Test
+    @DisplayName("it should return 200 status code when updating a destination")
+    void putDestination200() throws Exception {
+        var destinationDTO = new DestinationDTO("Destination Name", new BigDecimal(500), "http://localhost:8080/image");
+        var destination = new Destination(destinationDTO);
+
+        when(destinationService.updateDestination(1L, destinationDTO)).thenReturn(destination);
+
+        var response = mvc.perform(
+                put("/destinos/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(destinationDTOJSON.write(new DestinationDTO("Destination Name", new BigDecimal(500), "http://localhost:8080/image"))
                                 .getJson())
