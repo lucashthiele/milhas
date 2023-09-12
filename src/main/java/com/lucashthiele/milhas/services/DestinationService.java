@@ -2,6 +2,7 @@ package com.lucashthiele.milhas.services;
 
 import com.lucashthiele.milhas.domain.destination.Destination;
 import com.lucashthiele.milhas.domain.destination.DestinationDTO;
+import com.lucashthiele.milhas.exceptions.DestinationNotFoundException;
 import com.lucashthiele.milhas.repositories.DestinationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,9 @@ public class DestinationService {
     }
 
     public void deleteDestination(Long id) {
-        destinationRepository.deleteById(id);
+        var destination = destinationRepository.findById(id)
+                .orElseThrow(() -> new DestinationNotFoundException("Nenhum destino encontrado"));
+
+        destinationRepository.delete(destination);
     }
 }
