@@ -22,7 +22,12 @@ public class DestinationService {
     }
 
     public List<Destination> findDestinations(String name) {
-        if (name != null) return destinationRepository.findByNameContains(name);
+        if (name != null) {
+            var destinationList = destinationRepository.findByNameContains(name);
+            if (destinationList.isEmpty()) throw new DestinationNotFoundException("Nenhum destino encontrado");
+
+            return destinationList;
+        }
         else return destinationRepository.findAll();
     }
 
