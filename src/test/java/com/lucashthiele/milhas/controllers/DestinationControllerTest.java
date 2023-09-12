@@ -2,6 +2,7 @@ package com.lucashthiele.milhas.controllers;
 
 import com.lucashthiele.milhas.domain.destination.Destination;
 import com.lucashthiele.milhas.domain.destination.DestinationDTO;
+import com.lucashthiele.milhas.domain.rating.Rating;
 import com.lucashthiele.milhas.domain.rating.RatingDTO;
 import com.lucashthiele.milhas.services.DestinationService;
 import org.junit.jupiter.api.DisplayName;
@@ -17,12 +18,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -37,6 +39,8 @@ class DestinationControllerTest {
     private JacksonTester<DestinationDTO> destinationDTOJSON;
     @Autowired
     private JacksonTester<Destination> destinationJSON;
+    @Autowired
+    private JacksonTester<List<Destination>> destinationListJSON;
 
     @Test
     @DisplayName("it should return 200 status code when creating a destination")
@@ -81,6 +85,28 @@ class DestinationControllerTest {
 
         var expectedJSON = destinationJSON.write(
                 destination
+        ).getJson();
+
+        assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
+    }
+
+    @Test
+    @DisplayName("it should return 200 status code when reading the destinations")
+    void getDestination200() throws Exception {
+        var destinationDTO = new DestinationDTO("Destination Name", new BigDecimal(500), "http://localhost:8080/image");
+        var destination = new Destination(destinationDTO);
+        var mockDestinationList = new ArrayList<Destination>();
+        mockDestinationList.add(destination);
+
+        when(destinationService.findDestinations(null)).thenReturn(mockDestinationList);
+
+        var response = mvc.perform(get("/destinos"))
+                .andReturn().getResponse();
+
+        assertThat200(response.getStatus());
+
+        var expectedJSON = destinationListJSON.write(
+                mockDestinationList
         ).getJson();
 
         assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
