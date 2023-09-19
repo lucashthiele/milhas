@@ -20,10 +20,18 @@ public class Destination {
     private BigDecimal value;
     @Column(name = "picture_url")
     private String pictureUrl;
+    @Column(name = "secondary_picture_url")
+    private String secondaryPictureUrl;
+    @Column(name = "meta_text")
+    private String metaText;
+    private String description;
 
     public Destination(DestinationDTO data){
         this.name = data.name();
         this.value = data.value();
         this.pictureUrl = data.pictureUrl();
+        this.secondaryPictureUrl = data.secondaryPictureUrl();
+        this.metaText = data.metaText();
+        this.description = data.description();
     }
 }

@@ -42,9 +42,16 @@ public class DestinationService {
     }
 
     public void deleteDestination(Long id) {
-        var destination = destinationRepository.findById(id)
-                .orElseThrow(() -> new DestinationNotFoundException("Nenhum destino encontrado"));
+        var destination = getDestinationOrThrow(id);
 
         destinationRepository.delete(destination);
+    }
+
+    public Destination findDestination(Long id) {
+        return getDestinationOrThrow(id);
+    }
+
+    private Destination getDestinationOrThrow(Long id) {
+        return destinationRepository.findById(id).orElseThrow(() -> new DestinationNotFoundException("Nenhum destino encontrado"));
     }
 }

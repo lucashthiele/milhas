@@ -3,6 +3,7 @@ package com.lucashthiele.milhas.controllers;
 import com.lucashthiele.milhas.domain.destination.Destination;
 import com.lucashthiele.milhas.domain.destination.DestinationDTO;
 import com.lucashthiele.milhas.services.DestinationService;
+import jakarta.validation.Valid;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +18,20 @@ public class DestinationController {
     private DestinationService destinationService;
 
     @PostMapping
-    public ResponseEntity<Destination> create(@RequestBody  DestinationDTO data){
+    public ResponseEntity<Destination> create(@RequestBody @Valid DestinationDTO data){
         var destination = destinationService.createDestination(data);
 
         return ResponseEntity.ok(destination);
     }
 
     @GetMapping
-    public ResponseEntity<List<Destination>> findDestination(@RequestParam(value = "nome", required = false) String name){
+    public ResponseEntity<List<Destination>> read(@RequestParam(value = "nome", required = false) String name){
         return ResponseEntity.ok(destinationService.findDestinations(name));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Destination> findDestination(@PathVariable Long id){
+        return ResponseEntity.ok(destinationService.findDestination(id));
     }
 
     @PutMapping("/{id}")

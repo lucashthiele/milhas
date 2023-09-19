@@ -43,7 +43,8 @@ class DestinationControllerTest {
     @Test
     @DisplayName("it should return 200 status code when creating a destination")
     void postDestination200() throws Exception{
-        var destinationDTO = new DestinationDTO("Destination Name", new BigDecimal(500), "http://localhost:8080/image");
+        var destinationDTO = destinationDTOBuilder();
+
         var destination = new Destination(destinationDTO);
 
         when(destinationService.createDestination(any())).thenReturn(destination);
@@ -51,7 +52,7 @@ class DestinationControllerTest {
         var response = mvc.perform(
                 post("/destinos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(destinationDTOJSON.write(new DestinationDTO("Destination Name", new BigDecimal(500), "http://localhost:8080/image"))
+                        .content(destinationDTOJSON.write(destinationDTOBuilder())
                                 .getJson())
         ).andReturn().getResponse();
 
@@ -67,7 +68,7 @@ class DestinationControllerTest {
     @Test
     @DisplayName("it should return 200 status code when updating a destination")
     void putDestination200() throws Exception {
-        var destinationDTO = new DestinationDTO("Destination Name", new BigDecimal(500), "http://localhost:8080/image");
+        var destinationDTO = destinationDTOBuilder();
         var destination = new Destination(destinationDTO);
 
         when(destinationService.updateDestination(1L, destinationDTO)).thenReturn(destination);
@@ -75,7 +76,7 @@ class DestinationControllerTest {
         var response = mvc.perform(
                 put("/destinos/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(destinationDTOJSON.write(new DestinationDTO("Destination Name", new BigDecimal(500), "http://localhost:8080/image"))
+                        .content(destinationDTOJSON.write(destinationDTOBuilder())
                                 .getJson())
         ).andReturn().getResponse();
 
@@ -91,7 +92,7 @@ class DestinationControllerTest {
     @Test
     @DisplayName("it should return 200 status code when reading the destinations")
     void getDestination200() throws Exception {
-        var destinationDTO = new DestinationDTO("Destination Name", new BigDecimal(500), "http://localhost:8080/image");
+        var destinationDTO = destinationDTOBuilder();
         var destination = new Destination(destinationDTO);
         var mockDestinationList = new ArrayList<Destination>();
         mockDestinationList.add(destination);
@@ -110,6 +111,8 @@ class DestinationControllerTest {
         assertThat(response.getContentAsString()).isEqualTo(expectedJSON);
     }
 
+
+
     @Test
     @DisplayName("it should return 204 status code when deleting a destination")
     void deleteDestination200() throws Exception {
@@ -123,5 +126,14 @@ class DestinationControllerTest {
     }
     private void assertThat204(int statusCode){
         assertThat(statusCode).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+    private static DestinationDTO destinationDTOBuilder() {
+        return new DestinationDTO(
+                "Destination Name",
+                new BigDecimal(500),
+                "http://localhost:8080/image",
+                "http://localhost:8080/image/2",
+                "Meta Text",
+                null);
     }
 }
